@@ -3,7 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import { Debt, RepaymentStep, RepaymentStrategy } from '../../types';
+import { Debt, RepaymentStep, RepaymentStrategy } from '../../../types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const RepaymentPlan: React.FC<{ plan: RepaymentStep[], totalMonths: number }> = ({ plan, totalMonths }) => {

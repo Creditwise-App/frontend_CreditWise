@@ -23,7 +23,7 @@ const Badge: React.FC<{ icon: string; title: string; earned: boolean }> = ({ ico
 
 const UserDashboardPage: React.FC = () => {
     const { user } = useAuth();
-    
+     console.log("CURRENT USER:", user);
     return (
         <div className="space-y-8">
             <h1 className="text-3xl font-bold">Welcome back, {user?.name}!</h1>

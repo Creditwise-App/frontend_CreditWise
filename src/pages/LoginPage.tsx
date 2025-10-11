@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { UserRole } from '../types';
+import { UserRole } from '../../types';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +29,7 @@ const LoginPage: React.FC = () => {
       if (user.role === UserRole.ADMIN) {
         navigate('/admin/dashboard', { replace: true });
       } else {
-        navigate(from === '/' ? '/dashboard' : from, { replace: true });
+        navigate('/dashboard' , { replace: true });
       }
     } catch (err: any) {
       setError(err.message || 'Failed to log in.');

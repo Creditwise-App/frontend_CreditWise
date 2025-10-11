@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { MOCK_LESSONS } from '../../constants';
-import { Lesson } from '../../types';
+import { MOCK_LESSONS } from '../../../constants';
+import { Lesson } from '../../../types';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';

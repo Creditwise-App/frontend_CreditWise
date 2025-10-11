@@ -1,8 +1,8 @@
 
 import React, { ReactNode } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { UserRole } from '../../../types';
 
 const Navbar: React.FC = () => {
     const { user, logout } = useAuth();
@@ -72,7 +72,7 @@ export const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
             <Navbar />
             <main>
                 <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                    {children}
+                    <Outlet/>
                 </div>
             </main>
         </div>

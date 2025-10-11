@@ -1,7 +1,7 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { User, AuthenticatedUser, UserRole } from '../types';
-import { MOCK_USERS } from '../constants';
+import { User, AuthenticatedUser, UserRole } from '../../types';
+import { MOCK_USERS } from '../../constants';
 
 interface AuthContextType {
   user: AuthenticatedUser | null;
