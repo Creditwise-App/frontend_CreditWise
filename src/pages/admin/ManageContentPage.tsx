@@ -89,9 +89,9 @@ const ManageContentPage: React.FC = () => {
                             <tr key={lesson.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
                                 <td className="p-4">{lesson.title}</td>
                                 <td className="p-4 space-x-2">
-                                    {/* Fix: Removed unsupported 'size' prop and used className for styling. */}
+                                    
                                     <Button onClick={() => handleEdit(lesson)} className="px-2 py-1 text-sm">Edit</Button>
-                                    {/* Fix: Removed unsupported 'size' prop and used className for styling. */}
+                                    
                                     <Button onClick={() => handleDelete(lesson.id)} variant="secondary" className="bg-red-600 hover:bg-red-700 px-2 py-1 text-sm">Delete</Button>
                                 </td>
                             </tr>

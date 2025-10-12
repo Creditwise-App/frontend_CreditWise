@@ -52,3 +52,14 @@ export enum RepaymentStrategy {
     SNOWBALL = 'SNOWBALL',
     AVALANCHE = 'AVALANCHE'
 }
+
+// src/types.ts (append)
+export interface Appointment {
+  id: string;
+  userId: string | null;
+  userName?: string | null;
+  createdAt: string; // ISO
+  preferredDate?: string | null; // ISO string or human text
+  answers: Record<string, any>;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+}

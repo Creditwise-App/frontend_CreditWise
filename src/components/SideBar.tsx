@@ -23,7 +23,7 @@ export const Sidebar: React.FC = () => {
         <NavLink to="/" className="text-2xl font-bold text-primary-green">CreditWise</NavLink>
       </div>
 
-      {/* 🧭 Navigation Links */}
+      
       <nav className="flex-1 space-y-1">
         
 
@@ -40,6 +40,9 @@ export const Sidebar: React.FC = () => {
             <NavLink to="/admin/dashboard" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkInactive}`}>Dashboard</NavLink>
             <NavLink to="/admin/content" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkInactive}`}>Manage Content</NavLink>
             <NavLink to="/admin/analytics" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkInactive}`}>Analytics</NavLink>
+            <NavLink to="/admin/appointments" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkInactive}`}>
+      Appointments
+    </NavLink>
           </>
         )}
       </nav>
