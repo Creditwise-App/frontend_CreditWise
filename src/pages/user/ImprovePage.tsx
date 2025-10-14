@@ -7,6 +7,7 @@ import { Debt, RepaymentStep, RepaymentStrategy } from '../../../types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useAuth } from '../../context/AuthContext';
 import { useAppointments } from '../../context/AppointmentContext';
+import { useCreditTips } from '../../context/CreditTipsContext';
 
 const RepaymentPlan: React.FC<{ plan: RepaymentStep[]; totalMonths: number }> = ({ plan, totalMonths }) => {
   const chartData = useMemo(() => {
@@ -59,7 +60,6 @@ function generateSampleSlots() {
 }
 
 const ImprovePage: React.FC = () => {
-
   const [income, setIncome] = useState<number>(150000);
   const [debts, setDebts] = useState<Debt[]>([
     { id: '1', name: 'Credit Card', amount: 50000, interestRate: 24 },
@@ -69,11 +69,9 @@ const ImprovePage: React.FC = () => {
   const [plan, setPlan] = useState<RepaymentStep[] | null>(null);
   const [totalMonths, setTotalMonths] = useState(0);
 
-
   const [wizardOpen, setWizardOpen] = useState(false);
   const [step, setStep] = useState(1);
 
-  
   const [wIncome, setWIncome] = useState<number | ''>('');
   const [monthlyExpenses, setMonthlyExpenses] = useState<number | ''>('');
   const [wHasLoans, setWHasLoans] = useState<'yes' | 'no' | 'unknown'>('unknown');
@@ -84,7 +82,7 @@ const ImprovePage: React.FC = () => {
   const [wWantAppointment, setWWantAppointment] = useState<'yes' | 'no'>('no');
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
-  
+  const { getUserPlan } = useCreditTips();
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
 
   const { user } = useAuth();
@@ -92,7 +90,6 @@ const ImprovePage: React.FC = () => {
 
   const sampleSlots = useMemo(() => generateSampleSlots(), []);
 
- 
   const generatePlan = () => {
     const extraPayment = income * 0.2;
     let remainingDebts = JSON.parse(JSON.stringify(debts)) as Debt[];
@@ -132,7 +129,6 @@ const ImprovePage: React.FC = () => {
     setTotalMonths(month);
   };
 
- 
   const addDebt = () => setDebts([...debts, { id: Date.now().toString(), name: '', amount: 0, interestRate: 0 }]);
   const changeDebt = (index: number, field: keyof Debt, value: string | number) => {
     const copy = [...debts];
@@ -141,10 +137,8 @@ const ImprovePage: React.FC = () => {
     setDebts(copy);
   };
 
-  
   const userHasAppointment = Boolean(user && appointments.some(a => a.userId === user.id));
 
-  
   const openWizard = () => {
     setWizardOpen(true);
     setStep(1);
@@ -155,7 +149,6 @@ const ImprovePage: React.FC = () => {
     setStep(1);
     setSelectedSlot(null);
   };
-
 
   const parseDebtsTextToDebts = (text: string) => {
     const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
@@ -169,9 +162,7 @@ const ImprovePage: React.FC = () => {
     return parsed;
   };
 
-
   const submitWizard = () => {
-   
     if (wWantAppointment === 'yes') {
       if (!selectedSlot) {
         setSubmitMessage('Please select a slot for the appointment.');
@@ -183,7 +174,6 @@ const ImprovePage: React.FC = () => {
       }
     }
 
-  
     const answers = {
       monthlyIncome: wIncome,
       monthlyExpenses,
@@ -198,14 +188,12 @@ const ImprovePage: React.FC = () => {
 
     const preferredDate = wWantAppointment === 'yes' ? selectedSlot : null;
 
-    
-    const appt = addAppointment({
+    addAppointment({
       userId: user?.id ?? null,
       userName: user?.name ?? null,
       preferredDate,
       answers,
     });
-
 
     if (wIncome !== '') setIncome(Number(wIncome));
     if (debtsText.trim()) {
@@ -214,11 +202,13 @@ const ImprovePage: React.FC = () => {
     }
 
     setSubmitMessage('Your answers have been saved. Admin will review them in the Appointments panel.');
-   
+
     setTimeout(() => {
       closeWizard();
     }, 1200);
   };
+
+  const userPlan = user ? getUserPlan(user.id) : undefined;
 
   return (
     <div className="space-y-8">
@@ -234,48 +224,32 @@ const ImprovePage: React.FC = () => {
         )}
       </div>
 
-     
       {submitMessage && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded">
+        <div className="p-3 bg-green-50 border border-green-200 rounded text-green-800">
           {submitMessage}
         </div>
       )}
 
-     
-      <Card>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <Input id="income" label="Monthly Income (₦)" type="number" value={income} onChange={e => setIncome(Number(e.target.value))} />
-          </div>
-          <div>
-            <h3 className="text-lg font-medium mb-2">Debts</h3>
-            {debts.map((d, i) => (
-              <div key={d.id} className="grid grid-cols-3 gap-2 mb-2 p-2 border rounded">
-                <Input id={`name-${i}`} label="Name" value={d.name} onChange={e => changeDebt(i, 'name', e.target.value)} />
-                <Input id={`amount-${i}`} label="Amount (₦)" type="number" value={d.amount} onChange={e => changeDebt(i, 'amount', e.target.value)} />
-                <Input id={`rate-${i}`} label="Interest (%)" type="number" value={d.interestRate} onChange={e => changeDebt(i, 'interestRate', e.target.value)} />
-              </div>
-            ))}
-            <Button onClick={addDebt} variant="secondary">Add Debt</Button>
-          </div>
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold mb-3">Your Personalized Credit Plan</h2>
 
-          <div>
-            <h3 className="text-lg font-medium mb-2">Choose Strategy</h3>
-            <div className="flex gap-4">
-              <Button onClick={() => setStrategy(RepaymentStrategy.SNOWBALL)} className={strategy === RepaymentStrategy.SNOWBALL ? 'ring-2 ring-offset-2' : ''}>🧮 Snowball</Button>
-              <Button onClick={() => setStrategy(RepaymentStrategy.AVALANCHE)} className={strategy === RepaymentStrategy.AVALANCHE ? 'ring-2 ring-offset-2' : ''}>⚡ Avalanche</Button>
-            </div>
-          </div>
-
-          <div className="flex items-end">
-            <Button onClick={generatePlan} className="w-full">Generate Plan</Button>
-          </div>
-        </div>
-      </Card>
+        {!user ? (
+          <Card><div>Please log in to view your credit plan.</div></Card>
+        ) : userPlan ? (
+          <Card>
+            <p className="text-sm whitespace-pre-wrap text-gray-700">
+              {userPlan}
+            </p>
+          </Card>
+        ) : (
+          <Card>
+            <div>No credit plan assigned yet. Please wait for admin to provide one.</div>
+          </Card>
+        )}
+      </div>
 
       {plan && <RepaymentPlan plan={plan} totalMonths={totalMonths} />}
 
-   
       {wizardOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-auto">
           <div className="w-full h-full bg-white dark:bg-card-dark p-6">
@@ -302,7 +276,6 @@ const ImprovePage: React.FC = () => {
                   </>
                 )}
 
-                
                 {step === 2 && (
                   <>
                     <h3 className="font-semibold mb-2">Debts & Credit Behaviour</h3>
@@ -332,7 +305,6 @@ const ImprovePage: React.FC = () => {
                   </>
                 )}
 
-              
                 {step === 3 && (
                   <>
                     <h3 className="font-semibold mb-2">Habits & Goals</h3>
@@ -356,7 +328,6 @@ const ImprovePage: React.FC = () => {
                   </>
                 )}
 
-            
                 {step === 4 && (
                   <>
                     <h3 className="font-semibold mb-2">Review & Appointment</h3>
@@ -406,7 +377,6 @@ const ImprovePage: React.FC = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

@@ -6,6 +6,8 @@ interface AppointmentContextType {
   appointments: Appointment[];
   addAppointment: (a: Omit<Appointment, 'id' | 'createdAt' | 'status'>) => Appointment;
   getAppointment: (id: string) => Appointment | undefined;
+  updateStatus: (id: string, status: Appointment['status']) => Appointment | undefined;
+  getPendingCount: () => number;
   clearAll?: () => void;
 }
 
@@ -17,19 +19,23 @@ export const AppointmentProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [appointments, setAppointments] = useState<Appointment[]>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) as Appointment[] : [];
+      return raw ? (JSON.parse(raw) as Appointment[]) : [];
     } catch {
       return [];
     }
   });
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
+    } catch (e) {
+      console.error('Failed to persist appointments', e);
+    }
   }, [appointments]);
 
   const addAppointment = (a: Omit<Appointment, 'id' | 'createdAt' | 'status'>) => {
     const newAppt: Appointment = {
-      id: `appt-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+      id: `appt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       createdAt: new Date().toISOString(),
       status: 'pending',
       ...a,
@@ -40,7 +46,35 @@ export const AppointmentProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const getAppointment = (id: string) => appointments.find(x => x.id === id);
 
-  const value: AppointmentContextType = { appointments, addAppointment, getAppointment };
+  const updateStatus = (id: string, status: Appointment['status']) => {
+    let updated: Appointment | undefined;
+    setAppointments(prev =>
+      prev.map(appt => {
+        if (appt.id === id) {
+          updated = { ...appt, status };
+          return updated;
+        }
+        return appt;
+      })
+    );
+    // Return updated after setState queued (we return the object we created)
+    return updated;
+  };
+
+  const getPendingCount = () => appointments.filter(a => a.status === 'pending').length;
+
+  const clearAll = () => {
+    setAppointments([]);
+  };
+
+  const value: AppointmentContextType = {
+    appointments,
+    addAppointment,
+    getAppointment,
+    updateStatus,
+    getPendingCount,
+    clearAll,
+  };
 
   return <AppointmentContext.Provider value={value}>{children}</AppointmentContext.Provider>;
 };

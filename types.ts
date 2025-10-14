@@ -61,5 +61,13 @@ export interface Appointment {
   createdAt: string; // ISO
   preferredDate?: string | null; // ISO string or human text
   answers: Record<string, any>;
-  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  status: 'pending' | 'approved' | 'completed';
+}
+
+
+export interface CreditTip {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string; // ISO
 }
