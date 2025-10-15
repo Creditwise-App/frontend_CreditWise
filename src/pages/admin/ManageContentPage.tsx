@@ -1,13 +1,12 @@
-
 import React, { useState } from 'react';
-import { MOCK_LESSONS } from '../../../constants';
+import { useLessons } from '../../context/LessonsContext'; // ✅ Use global lessons
 import { Lesson } from '../../../types';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 
 const ManageContentPage: React.FC = () => {
-    const [lessons, setLessons] = useState<Lesson[]>(MOCK_LESSONS);
+    const { lessons, addLesson, updateLesson, deleteLesson } = useLessons();
     const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
 
     const handleEdit = (lesson: Lesson) => {
@@ -16,13 +15,17 @@ const ManageContentPage: React.FC = () => {
 
     const handleSave = () => {
         if (!editingLesson) return;
-        const index = lessons.findIndex(l => l.id === editingLesson.id);
-        if (index > -1) {
-            const newLessons = [...lessons];
-            newLessons[index] = editingLesson;
-            setLessons(newLessons);
-        } else { // This is a new lesson
-            setLessons([...lessons, { ...editingLesson, id: `lesson-${Date.now()}` }]);
+
+        if (editingLesson.id) {
+            // ✅ Update existing lesson
+            updateLesson(editingLesson);
+        } else {
+            // ✅ Add new lesson (ID auto-created in context)
+            addLesson({
+                title: editingLesson.title,
+                content: editingLesson.content,
+                quizId: editingLesson.quizId,
+            });
         }
         setEditingLesson(null);
     };
@@ -32,7 +35,7 @@ const ManageContentPage: React.FC = () => {
     };
 
     const handleDelete = (id: string) => {
-        setLessons(lessons.filter(l => l.id !== id));
+        deleteLesson(id);
     };
 
     return (
@@ -52,9 +55,9 @@ const ManageContentPage: React.FC = () => {
                             value={editingLesson.title}
                             onChange={(e) => setEditingLesson({ ...editingLesson, title: e.target.value })}
                         />
-                         <Input
+                        <Input
                             id="quizId"
-                            label="Quiz ID"
+                            label="Quiz ID (Optional)"
                             value={editingLesson.quizId}
                             onChange={(e) => setEditingLesson({ ...editingLesson, quizId: e.target.value })}
                         />
@@ -63,7 +66,9 @@ const ManageContentPage: React.FC = () => {
                             <textarea
                                 id="content"
                                 rows={5}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-blue focus:border-primary-blue sm:text-sm bg-card-light dark:bg-card-dark"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 
+                                           rounded-md shadow-sm focus:outline-none focus:ring-primary-blue 
+                                           focus:border-primary-blue sm:text-sm bg-card-light dark:bg-card-dark"
                                 value={editingLesson.content}
                                 onChange={(e) => setEditingLesson({ ...editingLesson, content: e.target.value })}
                             />
@@ -89,10 +94,9 @@ const ManageContentPage: React.FC = () => {
                             <tr key={lesson.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
                                 <td className="p-4">{lesson.title}</td>
                                 <td className="p-4 space-x-2">
-                                    
                                     <Button onClick={() => handleEdit(lesson)} className="px-2 py-1 text-sm">Edit</Button>
-                                    
-                                    <Button onClick={() => handleDelete(lesson.id)} variant="secondary" className="bg-red-600 hover:bg-red-700 px-2 py-1 text-sm">Delete</Button>
+                                    <Button onClick={() => handleDelete(lesson.id)} variant="secondary"
+                                        className="bg-red-600 hover:bg-red-700 px-2 py-1 text-sm">Delete</Button>
                                 </td>
                             </tr>
                         ))}

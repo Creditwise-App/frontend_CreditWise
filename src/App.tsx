@@ -27,12 +27,14 @@ import ManageContentPage from './pages/admin/ManageContentPage';
 import AnalyticsPage from './pages/admin/AnalyticsPage';
 import AdminAppointmentsPage from './pages/admin/AdminAppointmentsPage';
 import AdminAppointmentDetail from './pages/admin/AdminAppointmentDetail';
+import { LessonsProvider } from './context/LessonsContext';
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <AppointmentProvider>
         <CreditTipsProvider>
+          <LessonsProvider>
           <HashRouter>
             <Routes>
 
@@ -64,6 +66,7 @@ const App: React.FC = () => {
 
             </Routes>
           </HashRouter>
+          </LessonsProvider>
         </CreditTipsProvider>
       </AppointmentProvider>
     </AuthProvider>
