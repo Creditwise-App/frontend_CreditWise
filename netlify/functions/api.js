@@ -28,10 +28,17 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/creditwise')
+// Connect to MongoDB with improved error handling
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/creditwise';
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
 .then(() => console.log('Connected to MongoDB'))
-.catch((error) => console.error('MongoDB connection error:', error));
+.catch((error) => {
+  console.error('MongoDB connection error:', error);
+  // Note: In a serverless environment, we can't exit the process
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
