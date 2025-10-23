@@ -1,47 +1,76 @@
 // src/context/CreditTipsContext.tsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface CreditPlan {
-  userId: string;
-  plan: string;
-}
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { CreditTip } from '../../types';
+import { tipsAPI } from '../services/api';
 
 interface CreditTipsContextType {
-  plans: CreditPlan[];
-  getUserPlan: (userId: string) => string | undefined;
-  setUserPlan: (userId: string, plan: string) => void;
+  tips: CreditTip[];
+  loading: boolean;
+  error: string | null;
+  fetchTips: () => Promise<void>;
+  userPlans: Record<string, string>; // Store user plans by userId
+  setUserPlan: (userId: string, plan: string) => void; // Function to set a user's plan
+  getUserPlan: (userId: string) => string | null; // Function to get a user's plan
 }
 
 const CreditTipsContext = createContext<CreditTipsContextType | undefined>(undefined);
 
 export const CreditTipsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [plans, setPlans] = useState<CreditPlan[]>(() => {
-    // 🔁 Load from localStorage when app initializes
-    const saved = localStorage.getItem('creditPlans');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [tips, setTips] = useState<CreditTip[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [userPlans, setUserPlans] = useState<Record<string, string>>({});
+  const [lastFetchTime, setLastFetchTime] = useState<number>(0);
 
-  // 💾 Save to localStorage whenever plans change
+  // Use useCallback to memoize the fetchTips function
+  const fetchTips = useCallback(async () => {
+    // Prevent fetching too frequently (less than 5 minutes)
+    const now = Date.now();
+    if (now - lastFetchTime < 5 * 60 * 1000) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const data = await tipsAPI.getAllTips();
+      // Map the API response to match our CreditTip type
+      const mappedTips = data.map((tip: any) => ({
+        id: tip._id,
+        title: tip.title,
+        description: tip.description,
+        createdAt: tip.createdAt
+      }));
+      setTips(mappedTips);
+      setError(null);
+      setLastFetchTime(now); // Update the last fetch time
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch credit tips');
+      console.error('Error fetching credit tips:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [lastFetchTime]);
+
+  // Function to set a user's plan
+  const setUserPlan = useCallback((userId: string, plan: string) => {
+    setUserPlans(prev => ({
+      ...prev,
+      [userId]: plan
+    }));
+  }, []);
+
+  // Function to get a user's plan
+  const getUserPlan = useCallback((userId: string) => {
+    return userPlans[userId] || null;
+  }, [userPlans]);
+
+  // Fetch tips once when the provider mounts
   useEffect(() => {
-    localStorage.setItem('creditPlans', JSON.stringify(plans));
-  }, [plans]);
-
-  const getUserPlan = (userId: string) => {
-    return plans.find(p => p.userId === userId)?.plan;
-  };
-
-  const setUserPlan = (userId: string, plan: string) => {
-    setPlans(prev => {
-      const existing = prev.find(p => p.userId === userId);
-      if (existing) {
-        return prev.map(p => p.userId === userId ? { ...p, plan } : p);
-      }
-      return [...prev, { userId, plan }];
-    });
-  };
+    fetchTips();
+  }, [fetchTips]);
 
   return (
-    <CreditTipsContext.Provider value={{ plans, getUserPlan, setUserPlan }}>
+    <CreditTipsContext.Provider value={{ tips, loading, error, fetchTips, userPlans, setUserPlan, getUserPlan }}>
       {children}
     </CreditTipsContext.Provider>
   );

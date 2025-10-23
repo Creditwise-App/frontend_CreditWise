@@ -1,13 +1,13 @@
-
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { User, AuthenticatedUser, UserRole } from '../../types';
-import { MOCK_USERS } from '../../constants';
+import { authAPI } from '../services/api';
 
 interface AuthContextType {
   user: AuthenticatedUser | null;
   login: (email: string, pass: string) => Promise<AuthenticatedUser>;
   logout: () => void;
   register: (email: string, pass: string, name: string) => Promise<AuthenticatedUser>;
+  updateUser: (userData: Partial<AuthenticatedUser>) => void;
   isLoading: boolean;
 }
 
@@ -20,8 +20,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('user');
+      console.log('Stored user from localStorage:', storedUser);
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        console.log('Parsed user from localStorage:', parsedUser);
+        setUser(parsedUser);
       }
     } catch (error) {
       console.error("Failed to parse user from localStorage", error);
@@ -31,49 +34,85 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const login = async (email: string, pass: string): Promise<AuthenticatedUser> => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const foundUser = MOCK_USERS.find(u => u.email === email);
-        if (foundUser) { // In a real app, you'd check the hashed password
-          const authenticatedUser: AuthenticatedUser = { ...foundUser, token: `mock-jwt-for-${foundUser.id}` };
-          localStorage.setItem('user', JSON.stringify(authenticatedUser));
-          setUser(authenticatedUser);
-          resolve(authenticatedUser);
-        } else {
-          reject(new Error('Invalid email or password'));
-        }
-      }, 500);
-    });
+    try {
+      const userData = await authAPI.login(email, pass);
+      console.log('Login response data:', userData);
+      
+      const authenticatedUser: AuthenticatedUser = {
+        id: userData.id,
+        email: userData.email,
+        name: userData.name,
+        role: userData.role as UserRole,
+        token: userData.token
+      };
+      
+      // Always include credit fields if they exist in the response, even if null
+      if ('currentCreditScore' in userData) {
+        authenticatedUser.currentCreditScore = userData.currentCreditScore;
+      }
+      if ('targetCreditScore' in userData) {
+        authenticatedUser.targetCreditScore = userData.targetCreditScore;
+      }
+      if ('extraMonthlyPayment' in userData) {
+        authenticatedUser.extraMonthlyPayment = userData.extraMonthlyPayment;
+      }
+      
+      console.log('Authenticated user object:', authenticatedUser);
+      localStorage.setItem('user', JSON.stringify(authenticatedUser));
+      console.log('User stored in localStorage:', JSON.stringify(authenticatedUser));
+      setUser(authenticatedUser);
+      return authenticatedUser;
+    } catch (error: any) {
+      throw new Error(error.message || 'Invalid email or password');
+    }
   };
 
   const register = async (email: string, pass: string, name: string): Promise<AuthenticatedUser> => {
-     return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (MOCK_USERS.some(u => u.email === email)) {
-          return reject(new Error('User with this email already exists'));
-        }
-        const newUser: User = {
-          id: `user-${Date.now()}`,
-          email,
-          name,
-          role: UserRole.USER
-        };
-        MOCK_USERS.push(newUser); // In a real app, this would be a DB call
-        const authenticatedUser: AuthenticatedUser = { ...newUser, token: `mock-jwt-for-${newUser.id}` };
-        localStorage.setItem('user', JSON.stringify(authenticatedUser));
-        setUser(authenticatedUser);
-        resolve(authenticatedUser);
-      }, 500);
-    });
-  }
+    try {
+      const userData = await authAPI.register(email, pass, name);
+      const authenticatedUser: AuthenticatedUser = {
+        id: userData.id,
+        email: userData.email,
+        name: userData.name,
+        role: userData.role as UserRole,
+        token: userData.token
+      };
+      
+      // Always include credit fields if they exist in the response, even if null
+      if ('currentCreditScore' in userData) {
+        authenticatedUser.currentCreditScore = userData.currentCreditScore;
+      }
+      if ('targetCreditScore' in userData) {
+        authenticatedUser.targetCreditScore = userData.targetCreditScore;
+      }
+      if ('extraMonthlyPayment' in userData) {
+        authenticatedUser.extraMonthlyPayment = userData.extraMonthlyPayment;
+      }
+      
+      localStorage.setItem('user', JSON.stringify(authenticatedUser));
+      setUser(authenticatedUser);
+      return authenticatedUser;
+    } catch (error: any) {
+      throw new Error(error.message || 'Registration failed');
+    }
+  };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
   };
 
+  // Add method to update user data
+  const updateUser = (userData: Partial<AuthenticatedUser>) => {
+    if (user) {
+      const updatedUser = { ...user, ...userData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

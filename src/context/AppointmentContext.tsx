@@ -1,79 +1,141 @@
 // src/context/AppointmentContext.tsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Appointment } from '../../types';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { Appointment, PopulatedAppointment } from '../../types';
+import { appointmentsAPI } from '../services/api';
+import { adminAPI } from '../services/api';
 
 interface AppointmentContextType {
   appointments: Appointment[];
-  addAppointment: (a: Omit<Appointment, 'id' | 'createdAt' | 'status'>) => Appointment;
-  getAppointment: (id: string) => Appointment | undefined;
-  updateStatus: (id: string, status: Appointment['status']) => Appointment | undefined;
+  loading: boolean;
+  error: string | null;
+  fetchAppointments: () => Promise<void>;
+  addAppointment: (a: Omit<Appointment, 'id' | 'createdAt' | 'status'>) => Promise<Appointment>;
+  getAppointment: (id: string) => Promise<Appointment | undefined>;
+  updateStatus: (id: string, status: Appointment['status']) => Promise<Appointment | undefined>;
   getPendingCount: () => number;
-  clearAll?: () => void;
 }
 
 const AppointmentContext = createContext<AppointmentContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'creditwise_appointments_v1';
-
 export const AppointmentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [appointments, setAppointments] = useState<Appointment[]>(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as Appointment[]) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
-    } catch (e) {
-      console.error('Failed to persist appointments', e);
+  const fetchAppointments = useCallback(async () => {
+    // Prevent multiple simultaneous requests
+    if (loading) {
+      return;
     }
-  }, [appointments]);
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Use admin API to fetch all appointments
+      const data = await adminAPI.getAllAppointments();
+      
+      // Map the API response to match our Appointment type
+      const mappedAppointments = data.map((appt: PopulatedAppointment) => ({
+        id: appt._id,
+        // Handle the nested userId object from the populated response
+        userId: appt.userId ? (typeof appt.userId === 'object' ? appt.userId._id : appt.userId) : null,
+        userName: appt.userName || (appt.userId && typeof appt.userId === 'object' ? appt.userId.name : null),
+        createdAt: appt.createdAt,
+        preferredDate: appt.preferredDate,
+        answers: appt.answers,
+        status: appt.status
+      }));
+      
+      setAppointments(mappedAppointments);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch appointments');
+      console.error('Error fetching appointments:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [loading]); // Add loading as dependency
 
-  const addAppointment = (a: Omit<Appointment, 'id' | 'createdAt' | 'status'>) => {
-    const newAppt: Appointment = {
-      id: `appt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      createdAt: new Date().toISOString(),
-      status: 'pending',
-      ...a,
-    };
-    setAppointments(prev => [newAppt, ...prev]);
-    return newAppt;
+  // Remove the initial fetch from useEffect
+  // We'll let the component decide when to fetch
+  
+  const addAppointment = async (a: Omit<Appointment, 'id' | 'createdAt' | 'status'>) => {
+    try {
+      const data = await appointmentsAPI.createAppointment(a);
+      
+      const newAppointment: Appointment = {
+        id: data._id,
+        userId: data.userId,
+        userName: data.userName,
+        createdAt: data.createdAt,
+        preferredDate: data.preferredDate,
+        answers: data.answers,
+        status: data.status
+      };
+      
+      setAppointments(prev => [newAppointment, ...prev]);
+      return newAppointment;
+    } catch (err: any) {
+      // More detailed error handling
+      if (err.message) {
+        setError(err.message);
+      }
+      throw new Error(err.message || 'Failed to create appointment');
+    }
   };
 
-  const getAppointment = (id: string) => appointments.find(x => x.id === id);
+  const getAppointment = async (id: string) => {
+    try {
+      const data = await appointmentsAPI.getAppointmentById(id);
+      const appointment: any = {
+        id: data._id,
+        userId: data.userId,
+        userName: data.userName || (data.userId && typeof data.userId === 'object' ? data.userId.name : null),
+        createdAt: data.createdAt,
+        preferredDate: data.preferredDate,
+        answers: data.answers,
+        status: data.status
+      };
+      return appointment;
+    } catch (err: any) {
+      throw new Error(err.message || 'Failed to fetch appointment');
+    }
+  };
 
-  const updateStatus = (id: string, status: Appointment['status']) => {
-    let updated: Appointment | undefined;
-    setAppointments(prev =>
-      prev.map(appt => {
-        if (appt.id === id) {
-          updated = { ...appt, status };
-          return updated;
-        }
-        return appt;
-      })
-    );
-    // Return updated after setState queued (we return the object we created)
-    return updated;
+  const updateStatus = async (id: string, status: Appointment['status']) => {
+    try {
+      const data = await appointmentsAPI.updateAppointmentStatus(id, status);
+      const updatedAppointment: Appointment = {
+        id: data._id,
+        userId: data.userId,
+        userName: data.userName,
+        createdAt: data.createdAt,
+        preferredDate: data.preferredDate,
+        answers: data.answers,
+        status: data.status
+      };
+      
+      setAppointments(prev =>
+        prev.map(appt => appt.id === id ? updatedAppointment : appt)
+      );
+      
+      return updatedAppointment;
+    } catch (err: any) {
+      throw new Error(err.message || 'Failed to update appointment status');
+    }
   };
 
   const getPendingCount = () => appointments.filter(a => a.status === 'pending').length;
 
-  const clearAll = () => {
-    setAppointments([]);
-  };
-
   const value: AppointmentContextType = {
     appointments,
+    loading,
+    error,
+    fetchAppointments,
     addAppointment,
     getAppointment,
     updateStatus,
     getPendingCount,
-    clearAll,
   };
 
   return <AppointmentContext.Provider value={value}>{children}</AppointmentContext.Provider>;

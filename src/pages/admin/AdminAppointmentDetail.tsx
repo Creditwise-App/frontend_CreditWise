@@ -7,29 +7,42 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 
 const AdminAppointmentDetail: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getAppointment, updateStatus } = useAppointments();
   const { setUserPlan } = useCreditTips(); // ✅ Access CreditTips context
   const [showPlanModal, setShowPlanModal] = useState(false);
-const [editedPlan, setEditedPlan] = useState("");
-  const appt = id ? getAppointment(id) : undefined;
-  const [status, setStatus] = useState(appt?.status);
+  const [editedPlan, setEditedPlan] = useState("");
+  const [appt, setAppt] = useState<any>(null); // We'll improve typing later
+  const [status, setStatus] = useState<any>(null);
 
   useEffect(() => {
-    setStatus(appt?.status);
-  }, [appt]);
+    const fetchAppointment = async () => {
+      if (id) {
+        try {
+          const appointment = await getAppointment(id);
+          setAppt(appointment);
+          setStatus(appointment?.status);
+        } catch (error) {
+          console.error('Error fetching appointment:', error);
+        }
+      }
+    };
+    
+    fetchAppointment();
+  }, [id, getAppointment]);
 
-  if (!appt) return <Card>Appointment not found</Card>;
-
-  const changeStatus = (newStatus: typeof appt.status) => {
-    updateStatus(appt.id, newStatus);
-    setStatus(newStatus);
+  const changeStatus = (newStatus: string) => {
+    if (id && appt) {
+      updateStatus(id, newStatus as any);
+      setStatus(newStatus);
+    }
   };
 
- const generatePlan = () => {
-  const plan = `
-Credit Improvement Plan for ${appt.userName ?? 'User'}:
+  const generatePlan = () => {
+    if (!appt) return;
+    
+    const plan = `Credit Improvement Plan for ${appt.userName ?? 'User'}:
 
 1️⃣ Payment History:
    - Ensure all bills are paid before due dates.
@@ -53,10 +66,11 @@ ${JSON.stringify(appt.answers, null, 2)}
 Stay consistent and monitor your credit score monthly.
 `;
 
-  setEditedPlan(plan);
-  setShowPlanModal(true);
-};
+    setEditedPlan(plan);
+    setShowPlanModal(true);
+  };
 
+  if (!appt) return <Card>Appointment not found</Card>;
 
   return (
     <div>
@@ -70,7 +84,7 @@ Stay consistent and monitor your credit score monthly.
           <div className="flex items-center justify-between">
             <div>
               <div><strong>Booked by:</strong> {appt.userName ?? 'Guest'}</div>
-              <div><strong>Email:</strong> {appt.userEmail ?? '—'}</div>
+              <div><strong>Email:</strong> {appt.userId && typeof appt.userId === 'object' && appt.userId.email ? appt.userId.email : '—'}</div>
               <div><strong>Created:</strong> {new Date(appt.createdAt).toLocaleString()}</div>
               <div><strong>Preferred slot:</strong> {appt.preferredDate ? new Date(appt.preferredDate).toLocaleString() : 'None'}</div>
             </div>
@@ -106,37 +120,41 @@ Stay consistent and monitor your credit score monthly.
           </div>
         </div>
       </Card>
-{showPlanModal && (
-  <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-    <Card className="w-full max-w-2xl p-6">
-      <h2 className="text-2xl font-bold mb-4">Edit Credit Improvement Plan</h2>
+      {showPlanModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <Card className="w-full max-w-2xl p-6">
+            <h2 className="text-2xl font-bold mb-4">Edit Credit Improvement Plan</h2>
 
-      <textarea
-        className="w-full h-64 border rounded p-3 bg-gray-50 dark:bg-gray-800 text-sm"
-        value={editedPlan}
-        onChange={(e) => setEditedPlan(e.target.value)}
-      />
+            <textarea
+              className="w-full h-64 border rounded p-3 bg-gray-50 dark:bg-gray-800 text-sm"
+              value={editedPlan}
+              onChange={(e) => setEditedPlan(e.target.value)}
+            />
 
-      <div className="flex justify-end gap-3 mt-4">
-        <Button variant="secondary" onClick={() => setShowPlanModal(false)}>
-          Cancel
-        </Button>
-        <Button
-          className="bg-green-600 text-white"
-          onClick={() => {
-            setUserPlan(appt.userId, editedPlan);
-            setShowPlanModal(false);
-            alert("Credit Plan Saved & Sent to User!");
-          }}
-        >
-          Save Plan
-        </Button>
-      </div>
-    </Card>
-  </div>
-)}
-
-
+            <div className="flex justify-end gap-3 mt-4">
+              <Button variant="secondary" onClick={() => setShowPlanModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                className="bg-green-600 text-white"
+                onClick={() => {
+                  // Check if userId exists and is a string
+                  if (appt.userId && typeof appt.userId === 'string') {
+                    setUserPlan(appt.userId, editedPlan);
+                  } else if (appt.userId && typeof appt.userId === 'object' && appt.userId._id) {
+                    // If userId is an object with _id property
+                    setUserPlan(appt.userId._id, editedPlan);
+                  }
+                  setShowPlanModal(false);
+                  alert("Credit Plan Saved & Sent to User!");
+                }}
+              >
+                Save Plan
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

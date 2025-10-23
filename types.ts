@@ -9,6 +9,9 @@ export interface User {
   email: string;
   role: UserRole;
   name: string;
+  currentCreditScore?: number | null;
+  targetCreditScore?: number | null;
+  extraMonthlyPayment?: number | null;
 }
 
 export interface AuthenticatedUser extends User {
@@ -19,7 +22,9 @@ export interface Lesson {
   id: string;
   title: string;
   content: string;
-  quizId: string;
+  quizId?: string;
+  likes?: number;
+  dislikes?: number;
 }
 
 export interface QuizQuestion {
@@ -56,14 +61,32 @@ export enum RepaymentStrategy {
 // src/types.ts (append)
 export interface Appointment {
   id: string;
-  userId: string | null;
+  userId: {
+    _id: string;
+    name: string;
+    email: string;
+  } | string | null;
   userName?: string | null;
   createdAt: string; // ISO
   preferredDate?: string | null; // ISO string or human text
   answers: Record<string, any>;
-  status: 'pending' | 'approved' | 'completed';
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
 }
 
+// API response type for populated appointment
+export interface PopulatedAppointment {
+  _id: string;
+  userId: {
+    _id: string;
+    name: string;
+    email: string;
+  } | string | null;
+  userName?: string | null;
+  createdAt: string; // ISO
+  preferredDate?: string | null; // ISO string or human text
+  answers: Record<string, any>;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+}
 
 export interface CreditTip {
   id: string;
