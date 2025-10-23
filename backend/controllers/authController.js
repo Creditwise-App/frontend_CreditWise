@@ -44,7 +44,7 @@ const register = async (req, res) => {
     
     res.status(201).json(response);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Failed to register user' });
   }
 };
 
@@ -67,17 +67,6 @@ const login = async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
     
-    // Log user data for debugging
-    console.log('User data from database:', {
-      id: user._id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      currentCreditScore: user.currentCreditScore,
-      targetCreditScore: user.targetCreditScore,
-      extraMonthlyPayment: user.extraMonthlyPayment
-    });
-    
     // Only include credit fields in response if they have values
     const response = {
       id: user._id,
@@ -92,11 +81,9 @@ const login = async (req, res) => {
     response.targetCreditScore = user.targetCreditScore;
     response.extraMonthlyPayment = user.extraMonthlyPayment;
     
-    console.log('Login response:', response);
-    
     res.json(response);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Failed to login' });
   }
 };
 

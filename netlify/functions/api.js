@@ -1,29 +1,26 @@
 const express = require('express');
+const serverless = require('serverless-http');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const path = require('path');
 const mongoose = require('mongoose');
 
 // Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config();
 
 // Import routes
-const authRoutes = require('./routes/auth');
-const lessonRoutes = require('./routes/lessons');
-const quizRoutes = require('./routes/quizzes');
-const appointmentRoutes = require('./routes/appointments');
-const tipRoutes = require('./routes/tips');
-const adminRoutes = require('./routes/admin');
-const userRoutes = require('./routes/users');
+const authRoutes = require('../../backend/routes/auth');
+const lessonRoutes = require('../../backend/routes/lessons');
+const quizRoutes = require('../../backend/routes/quizzes');
+const appointmentRoutes = require('../../backend/routes/appointments');
+const tipRoutes = require('../../backend/routes/tips');
+const adminRoutes = require('../../backend/routes/admin');
+const userRoutes = require('../../backend/routes/users');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Configure CORS for both development and production
+// Configure CORS for Netlify Functions
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'development' 
-    ? ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002']
-    : true, // Allow all origins in production, or specify your production domain
+  origin: true, // Allow all origins in production
   credentials: true
 };
 
@@ -56,6 +53,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Wrap the Express app with serverless-http
+const handler = serverless(app);
+module.exports.handler = async (event, context) => {
+  return handler(event, context);
+};

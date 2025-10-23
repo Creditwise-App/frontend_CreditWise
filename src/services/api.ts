@@ -1,4 +1,7 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+// Dynamically determine the API base URL based on the environment
+const API_BASE_URL = typeof process !== 'undefined' && process.env.NODE_ENV === 'development' 
+  ? 'http://localhost:5000/api' 
+  : '/api';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
