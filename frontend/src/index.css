@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-primary-green: #1db954;
+  --color-primary-blue: #007bff;
+  --color-dark-bg: #121212;
+  --color-light-bg: #f8f9fa;
+  --color-card-dark: #1e1e1e;
+  --color-card-light: #ffffff;
+}
+
+@layer base {
+  html, body, #root { 
+    height: 100%; 
+  }
+}
