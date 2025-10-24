@@ -1,131 +1,111 @@
-# CreditWise Nigeria
+# CreditWise Nigeria - Separated Project Structure
 
-CreditWise Nigeria is a financial literacy platform designed to help Nigerian users understand, manage, and improve their credit scores. The application provides educational content, personalized debt repayment strategies, and progress tracking tools to empower users on their journey to financial freedom.
+This repository contains the CreditWise Nigeria financial education platform, now organized with a clear separation between frontend and backend components.
 
-## Project Overview
-
-CreditWise Nigeria is a React-based web application built with TypeScript, utilizing Vite as the build tool. The application follows a modern component-based architecture with a clear separation of concerns between UI components, business logic, and data management.
-
-### Key Features
-
-1. **User Authentication & Authorization**
-   - User registration and login functionality
-   - Role-based access control (User vs Admin)
-   - Persistent sessions using localStorage
-
-2. **Educational Content**
-   - Interactive lessons on credit score fundamentals
-   - Quizzes to reinforce learning
-   - Credit improvement tips and strategies
-
-3. **Financial Tools**
-   - Personalized debt repayment calculators
-   - Credit score tracking and visualization
-   - Goal setting and progress monitoring
-
-4. **Administrative Dashboard**
-   - User analytics and engagement metrics
-   - Content management capabilities
-   - Appointment scheduling system
-
-### Technology Stack
-
-- **Frontend Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Routing**: React Router v7
-- **Styling**: Tailwind CSS
-- **Charts**: Recharts for data visualization
-- **State Management**: React Context API
-
-### Project Structure
+## Project Structure
 
 ```
-src/
-├── components/          # Reusable UI components
-│   ├── layout/          # Page layouts (Dashboard, Main)
-│   └── ui/              # Basic UI elements (Button, Card, Input)
-├── context/             # React context providers for state management
-├── pages/               # Page components organized by user role
-│   ├── admin/           # Admin-specific pages
-│   └── user/            # User-specific pages
-├── services/            # API service layer for backend communication
-├── App.tsx             # Main application component with routing
-└── main.tsx            # Application entry point
+creditwise-nigeria/
+├── backend/          # Node.js/Express backend API
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── .env
+│   ├── server.js
+│   └── ...
+├── frontend/         # React/TypeScript frontend application
+│   ├── src/
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── package.json
+│   └── ...
+├── README.md         # This file
+└── package.json      # Root package.json with workspace scripts
 ```
 
-### Core Functionality
+## Setup Instructions
 
-#### User Experience
-- Users can register/login to access personalized financial tools
-- Educational modules teach credit score fundamentals through interactive lessons
-- Dashboard displays current credit score, progress tracking, and improvement tips
-- Debt repayment calculator helps users create personalized financial plans
+### Prerequisites
+- Node.js (v16 or higher)
+- MongoDB (local or cloud instance)
 
-#### Administrative Features
-- Admin dashboard with user analytics and engagement metrics
-- Content management system for lessons and quizzes
-- Appointment scheduling for one-on-one financial counseling
-- Data visualization tools for monitoring platform performance
+### Installation
 
-## Backend API
-
-The backend is built with Node.js, Express, and MongoDB. It provides a RESTful API for all frontend functionality.
-
-### Backend Structure
-
-```
-backend/
-├── controllers/         # Request handlers
-├── models/              # Database models
-├── routes/              # API route definitions
-├── middleware/          # Authentication and other middleware
-├── config/              # Configuration files
-├── server.js           # Main server file
-└── seeder.js           # Database seeding script
-```
-
-### API Endpoints
-
-- **Auth**: `/api/auth/register`, `/api/auth/login`
-- **Lessons**: `/api/lessons`
-- **Quizzes**: `/api/quizzes`
-- **Tips**: `/api/tips`
-- **Appointments**: `/api/appointments`
-- **Admin**: `/api/admin/*`
-
-### Setting Up the Backend
-
-1. Navigate to the backend directory:
-   ```
-   cd backend
+1. Install root dependencies:
+   ```bash
+   npm run install:all
    ```
 
-2. Install dependencies:
-   ```
+   Or install manually:
+   ```bash
+   # Install root dependencies
    npm install
+   
+   # Install frontend dependencies
+   cd frontend
+   npm install
+   cd ..
+   
+   # Install backend dependencies
+   cd backend
+   npm install
+   cd ..
    ```
 
-3. Set up MongoDB:
-   - Install MongoDB locally or use a cloud service like MongoDB Atlas
-   - Update the `MONGODB_URI` in the `.env` file
+### Environment Setup
 
-4. Run the database seeder to populate initial data:
+1. Create a `.env` file in the `backend/` directory with the following variables:
    ```
-   node seeder.js
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret_key
+   PORT=5000
    ```
 
-5. Start the development server:
+### Running the Application
+
+1. Start the backend server:
+   ```bash
+   npm run dev:backend
    ```
+   
+   Or from the backend directory:
+   ```bash
+   cd backend
    npm run dev
    ```
 
-### Research Insights
+2. Start the frontend development server:
+   ```bash
+   npm run dev:frontend
+   ```
+   
+   Or from the frontend directory:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
 
-Based on analysis of the codebase, CreditWise Nigeria addresses a significant need in the Nigerian financial landscape where credit scoring systems are less understood compared to Western countries. The application focuses on:
+3. Access the application at `http://localhost:3000`
 
-1. Educating users about Nigeria's credit bureau system (CRC Credit Bureau, CR Services, XDS Credit Bureau)
-2. Providing actionable strategies for credit improvement specific to the Nigerian context
-3. Offering financial planning tools tailored to local economic conditions
-4. Gamifying the credit improvement journey with badges and progress tracking
+### Building for Production
 
-The application demonstrates thoughtful consideration of role-based access, responsive design, and user engagement through visual progress indicators and personalized recommendations.
+1. Build the frontend:
+   ```bash
+   npm run build:frontend
+   ```
+   
+   Or from the frontend directory:
+   ```bash
+   cd frontend
+   npm run build
+   ```
+
+## Deployment
+
+- Frontend: Can be deployed to any static hosting service (Netlify, Vercel, etc.)
+- Backend: Can be deployed to Node.js hosting platforms (Render, Railway, Heroku, etc.)
+
+## API Documentation
+
+The backend API is available at `http://localhost:5000/api` in development mode.

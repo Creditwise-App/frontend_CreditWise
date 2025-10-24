@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 5000;
 // Configure CORS for both development and production
 const corsOptions = {
   origin: process.env.NODE_ENV === 'development' 
-    ? ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002']
+    ? ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003', 'http://localhost:3004', 'http://localhost:3005', 'http://localhost:3006', 'http://localhost:3007']
     : true, // Allow all origins in production, or specify your production domain
   credentials: true
 };
@@ -31,16 +31,39 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Add logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
 // Connect to MongoDB with improved error handling
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/creditwise';
+console.log('Attempting to connect to MongoDB with URI:', MONGODB_URI);
+
 mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+  // Remove deprecated options
 })
-.then(() => console.log('Connected to MongoDB'))
+.then(() => {
+  console.log('Connected to MongoDB successfully');
+})
 .catch((error) => {
   console.error('MongoDB connection error:', error);
-  process.exit(1); // Exit if we can't connect to database
+  console.error('Please check your MongoDB URI and network connection');
+  // Don't exit the process, but log the error
+});
+
+// Check MongoDB connection status
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose connected to MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('Mongoose connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose disconnected from MongoDB');
 });
 
 // Routes
@@ -54,12 +77,17 @@ app.use('/api/users', userRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'CreditWise API is running' });
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'CreditWise API is running',
+    database: dbStatus
+  });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Unhandled error:', err);
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
