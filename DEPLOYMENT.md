@@ -1,38 +1,113 @@
 # Deployment Guide
 
+This guide explains how to deploy the CreditWise Nigeria application with the frontend on Netlify and the backend on Vercel.
+
+## Prerequisites
+
+1. Accounts:
+   - Netlify account (for frontend deployment)
+   - Vercel account (for backend deployment)
+   - MongoDB Atlas account (for database)
+
+2. Tools:
+   - Git
+   - Node.js (v16 or higher)
+
+## MongoDB Setup
+
+1. Create a MongoDB Atlas cluster
+2. Whitelist your IP addresses or use `0.0.0.0/0` for development (not recommended for production)
+3. Create a database user
+4. Get your MongoDB connection string
+
 ## Environment Variables
 
-When deploying to Netlify, you must set the following environment variables in the Netlify dashboard:
+### Backend (.env)
+Create a `.env` file in the `backend` directory with the following variables:
 
-1. `MONGODB_URI` - Your MongoDB connection string (e.g., MongoDB Atlas connection string)
-2. `JWT_SECRET` - A strong secret key for JWT token generation
-3. `NODE_ENV` - Set to "production"
+```env
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+NODE_ENV=production
+```
 
-## MongoDB Configuration
+### Frontend (.env.production)
+Create a `.env.production` file in the `frontend` directory with the following variables:
 
-Make sure your MongoDB database is accessible from the internet if deploying to a cloud platform. If using MongoDB Atlas:
+```env
+REACT_APP_API_URL=https://your-vercel-app.vercel.app/api
+```
 
-1. Create a cluster
-2. Add your IP address to the IP whitelist (or allow access from anywhere for testing)
-3. Create a database user
-4. Get the connection string and set it as `MONGODB_URI`
+## Netlify Deployment (Frontend)
 
-## Netlify Deployment Steps
+1. Connect your GitHub repository to Netlify
+2. Set the build settings:
+   - Build command: `cd frontend && npm install && npm run build`
+   - Publish directory: `frontend/dist`
+3. Add environment variables in Netlify dashboard:
+   - `REACT_APP_API_URL` = `https://your-vercel-app.vercel.app/api`
 
-1. Push all code to your GitHub repository
-2. Connect Netlify to your repository
-3. Set the build command to `npm run build`
-4. Set the publish directory to `dist`
-5. Add the environment variables mentioned above
-6. Deploy the site
+## Vercel Deployment (Backend)
 
-## Common Issues and Solutions
+1. Connect your GitHub repository to Vercel
+2. Set the root directory to `/backend`
+3. Set the build command to `npm install`
+4. Add environment variables in Vercel dashboard:
+   - `MONGODB_URI` = `your_mongodb_connection_string`
+   - `JWT_SECRET` = `your_jwt_secret_key`
+   - `NODE_ENV` = `production`
 
-### Environment Variables Not Set
-If you get authentication or database errors, make sure all required environment variables are set in Netlify.
+## Manual Deployment
 
-### CORS Errors
-The application is configured to allow all origins in production. If you want to restrict origins, modify the CORS configuration in `netlify/functions/api.js`.
+### Frontend to Netlify
 
-### Database Connection Issues
-Ensure your MongoDB URI is correct and the database is accessible from the internet.
+1. Build the frontend:
+   ```bash
+   cd frontend
+   npm install
+   npm run build
+   ```
+
+2. Deploy to Netlify using Netlify CLI:
+   ```bash
+   netlify deploy --prod
+   ```
+
+### Backend to Vercel
+
+1. Deploy to Vercel using Vercel CLI:
+   ```bash
+   cd backend
+   vercel --prod
+   ```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **CORS Errors**: Make sure your backend allows requests from your frontend domain
+2. **Environment Variables**: Ensure all required environment variables are set in both platforms
+3. **MongoDB Connection**: Verify your MongoDB connection string and IP whitelist
+4. **API Routes**: Check that API routes are correctly configured in both Netlify and Vercel
+
+### Logs and Monitoring
+
+- Check Netlify function logs for frontend API calls
+- Check Vercel function logs for backend API calls
+- Monitor MongoDB Atlas for connection issues
+
+## Updating Deployments
+
+To update your deployments:
+
+1. Push changes to your Git repository
+2. Netlify and Vercel will automatically redeploy if continuous deployment is enabled
+3. Or manually trigger deployments using the CLI or dashboard
+
+## Security Considerations
+
+1. Never commit sensitive information like API keys or passwords to Git
+2. Use environment variables for all sensitive data
+3. Regularly rotate your JWT secret and MongoDB credentials
+4. Use proper IP whitelisting for MongoDB Atlas
+5. Enable HTTPS for all production deployments

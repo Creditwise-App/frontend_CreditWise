@@ -1,6 +1,6 @@
 [build]
-  command = "npm run build"
-  publish = "dist"
+  command = "cd frontend && npm install && npm run build"
+  publish = "frontend/dist"
   functions = "netlify/functions"
 
 [[redirects]]
@@ -14,6 +14,6 @@
   status = 200
 
 [dev]
-  command = "npm run dev"
+  command = "cd frontend && npm run dev"
   port = 3000
   targetPort = 3000

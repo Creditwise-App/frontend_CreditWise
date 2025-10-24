@@ -103,8 +103,28 @@ creditwise-nigeria/
 
 ## Deployment
 
-- Frontend: Can be deployed to any static hosting service (Netlify, Vercel, etc.)
-- Backend: Can be deployed to Node.js hosting platforms (Render, Railway, Heroku, etc.)
+### Frontend Deployment (Netlify)
+
+1. Connect your GitHub repository to Netlify
+2. Set the build settings:
+   - Build command: `cd frontend && npm install && npm run build`
+   - Publish directory: `frontend/dist`
+3. Add environment variables in Netlify dashboard:
+   - `REACT_APP_API_URL` = `https://your-vercel-app.vercel.app/api`
+
+### Backend Deployment (Vercel)
+
+1. Connect your GitHub repository to Vercel
+2. Set the root directory to `/backend`
+3. Set the build command to `npm install`
+4. Add environment variables in Vercel dashboard:
+   - `MONGODB_URI` = `your_mongodb_connection_string`
+   - `JWT_SECRET` = `your_jwt_secret_key`
+   - `NODE_ENV` = `production`
+
+### Manual Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
 
 ## API Documentation
 
