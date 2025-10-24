@@ -110,17 +110,27 @@ creditwise-nigeria/
    - Build command: `cd frontend && npm install && npm run build`
    - Publish directory: `frontend/dist`
 3. Add environment variables in Netlify dashboard:
-   - `REACT_APP_API_URL` = `https://your-vercel-app.vercel.app/api`
+   - `REACT_APP_API_URL` = `https://your-render-app.onrender.com`
 
-### Backend Deployment (Vercel)
+### Backend Deployment (Render)
 
-1. Connect your GitHub repository to Vercel
-2. Set the root directory to `/backend`
-3. Set the build command to `npm install`
-4. Add environment variables in Vercel dashboard:
-   - `MONGODB_URI` = `your_mongodb_connection_string`
-   - `JWT_SECRET` = `your_jwt_secret_key`
+1. Push your code to GitHub
+2. Go to [render.com](https://render.com) and sign up or log in
+3. Click "New+" and select "Web Service"
+4. Connect your GitHub repository
+5. Fill in the service settings:
+   - Name: `creditwise-backend`
+   - Region: Choose the closest region to your users
+   - Branch: `main` (or your default branch)
+   - Root Directory: `backend`
+   - Environment: `Node`
+   - Build Command: `npm install`
+   - Start Command: `node server.js`
+6. Click "Advanced" and add environment variables:
+   - [MONGODB_URI](file://c:\Users\Dell\Downloads\creditwise-nigeria\backend\server.js#L40-L40) = your MongoDB connection string
+   - `JWT_SECRET` = your JWT secret key
    - `NODE_ENV` = `production`
+7. Click "Create Web Service"
 
 ### Manual Deployment
 
