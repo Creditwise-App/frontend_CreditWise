@@ -1,21 +1,9 @@
 const express = require('express');
 const serverless = require('serverless-http');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
-const mongoose = require('mongoose');
 
-// Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../../backend/.env') });
-
-// Import routes
-const authRoutes = require('../../backend/routes/auth');
-const lessonRoutes = require('../../backend/routes/lessons');
-const quizRoutes = require('../../backend/routes/quizzes');
-const appointmentRoutes = require('../../backend/routes/appointments');
-const tipRoutes = require('../../backend/routes/tips');
-const adminRoutes = require('../../backend/routes/admin');
-const userRoutes = require('../../backend/routes/users');
+// Create a simple proxy that forwards requests to your Render backend
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 
@@ -29,30 +17,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Connect to MongoDB with improved error handling
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/creditwise';
-mongoose.connect(MONGODB_URI, {
-  // Remove deprecated options for newer MongoDB versions
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch((error) => {
-  console.error('MongoDB connection error:', error);
-  // Note: In a serverless environment, we can't exit the process
-});
-
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/lessons', lessonRoutes);
-app.use('/api/quizzes', quizRoutes);
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/tips', tipRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/users', userRoutes);
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'CreditWise API is running' });
-});
+// Proxy all API requests to your Render backend
+app.use('/api', createProxyMiddleware({
+  target: 'https://creditwise-backend-p14g.onrender.com',
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api': '/api', // remove /api prefix
+  },
+}));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
