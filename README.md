@@ -103,14 +103,9 @@ creditwise-nigeria/
 
 ## Deployment
 
-### Frontend Deployment (Netlify)
+### Frontend Deployment (Vercel)
 
-1. Connect your GitHub repository to Netlify
-2. Set the build settings:
-   - Build command: `cd frontend && npm install && npm run build`
-   - Publish directory: `frontend/dist`
-3. Add environment variables in Netlify dashboard:
-   - `REACT_APP_API_URL` = `https://your-render-app.onrender.com`
+See [VERCEL_DEPLOYMENT_GUIDE.md](VERCEL_DEPLOYMENT_GUIDE.md) for detailed Vercel deployment instructions.
 
 ### Backend Deployment (Render)
 

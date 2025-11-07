@@ -10,8 +10,8 @@ export default defineConfig(({ mode }) => {
     let apiUrl = '/api'; // Default for local development with proxy
     
     if (mode === 'production') {
-        // For production, use environment variable or default
-        apiUrl = env.REACT_APP_API_URL || '/.netlify/functions/api';
+      // For production, use environment variable or default to /api for Vercel
+      apiUrl = env.REACT_APP_API_URL || '/api';
     }
     
     return {

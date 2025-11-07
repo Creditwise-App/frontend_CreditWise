@@ -7,7 +7,7 @@ This guide explains how to deploy the CreditWise Nigeria application with differ
 1. Accounts:
    - GitHub account
    - Render account (for backend deployment)
-   - Netlify account (for frontend deployment)
+   - Vercel account (for frontend deployment)
    - MongoDB Atlas account (for database)
 
 2. Tools:
@@ -36,7 +36,7 @@ NODE_ENV=production
 Create a `.env.production` file in the `frontend` directory with the following variables:
 
 ```env
-REACT_APP_API_URL=https://your-render-app.onrender.com/api
+REACT_APP_API_URL=/api
 ```
 
 ## Render Deployment (Backend)
@@ -59,18 +59,21 @@ REACT_APP_API_URL=https://your-render-app.onrender.com/api
    - `NODE_ENV` = `production`
 7. Click "Create Web Service"
 
-## Netlify Deployment (Frontend)
+## Vercel Deployment (Frontend)
 
-1. Connect your GitHub repository to Netlify
+1. Connect your GitHub repository to Vercel
 2. Set the build settings:
    - Build command: `cd frontend && npm install && npm run build`
-   - Publish directory: `frontend/dist`
-3. Add environment variables in Netlify dashboard:
-   - `REACT_APP_API_URL` = `https://your-render-app.onrender.com`
+   - Output directory: `frontend/dist`
+3. Add environment variables in Vercel dashboard:
+   - `REACT_APP_API_URL` = `/api`
+4. The project should automatically detect the vercel.json configuration
+
+For detailed Vercel deployment instructions, see [VERCEL_DEPLOYMENT_GUIDE.md](VERCEL_DEPLOYMENT_GUIDE.md)
 
 ## Manual Deployment
 
-### Frontend to Netlify
+### Frontend to Vercel
 
 1. Build the frontend:
    ```bash
@@ -79,9 +82,9 @@ REACT_APP_API_URL=https://your-render-app.onrender.com/api
    npm run build
    ```
 
-2. Deploy to Netlify using Netlify CLI:
+2. Deploy to Vercel using Vercel CLI:
    ```bash
-   netlify deploy --prod
+   vercel --prod
    ```
 
 ### Backend to Render via CLI
@@ -109,7 +112,7 @@ REACT_APP_API_URL=https://your-render-app.onrender.com/api
 ### Logs and Monitoring
 
 - Check Render service logs for backend API calls
-- Check Netlify function logs for frontend API calls
+- Check Vercel function logs for frontend API calls
 - Monitor MongoDB Atlas for connection issues
 
 ## Updating Deployments
@@ -117,7 +120,7 @@ REACT_APP_API_URL=https://your-render-app.onrender.com/api
 To update your deployments:
 
 1. Push changes to your Git repository
-2. Render and Netlify will automatically redeploy if continuous deployment is enabled
+2. Render and Vercel will automatically redeploy if continuous deployment is enabled
 3. Or manually trigger deployments using the CLI or dashboard
 
 ## Security Considerations
