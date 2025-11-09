@@ -23,12 +23,12 @@ const RepaymentPlan: React.FC<{ plan: RepaymentStep[]; totalMonths: number }> = 
 
   return (
     <Card>
-      <h2 className="text-2xl font-bold mb-4">Your Repayment Plan</h2>
-      <p>
+      <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Your Repayment Plan</h2>
+      <p className="text-sm md:text-base">
         It will take you <span className="font-bold text-primary-green">{totalMonths} months</span> to become debt-free.
       </p>
-      <div className="mt-4" style={{ width: '100%', height: 300 }}>
-        <ResponsiveContainer width="100%" height={300}>
+      <div className="mt-3 md:mt-4" style={{ width: '100%', height: 250 }}>
+        <ResponsiveContainer width="100%" height={250}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" label={{ value: 'Months', position: 'insideBottom', offset: -5 }} />
@@ -254,45 +254,45 @@ const ImprovePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Create Your Improvement Plan</h1>
+    <div className="space-y-6 md:space-y-8">
+      <h1 className="text-2xl md:text-3xl font-bold">Create Your Improvement Plan</h1>
 
-      <div className="flex items-center gap-4">
-        <Button onClick={openWizard} className="bg-primary-green text-white px-6 py-3 rounded-lg">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+        <Button onClick={openWizard} className="bg-primary-green text-white px-4 py-2 md:px-6 md:py-3 rounded-lg text-sm md:text-base">
           Improve My Credit Score
         </Button>
 
         {userHasPendingAppointment && (
-          <div className="text-sm text-yellow-700">You already have a booked appointment — admin will contact you.</div>
+          <div className="text-xs md:text-sm text-yellow-700">You already have a booked appointment — admin will contact you.</div>
         )}
       </div>
 
       {submitMessage && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded text-green-800">
+        <div className="p-3 bg-green-50 border border-green-200 rounded text-green-800 text-sm">
           {submitMessage}
         </div>
       )}
 
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-3">Your Personalized Credit Plan</h2>
+      <div className="mt-4 md:mt-6">
+        <h2 className="text-lg md:text-xl font-semibold mb-2 md:mb-3">Your Personalized Credit Plan</h2>
 
         <Card>
           <div>
             {!user ? (
-              <div>Please log in to view your credit plan.</div>
+              <div className="text-sm">Please log in to view your credit plan.</div>
             ) : userCreditPlan ? (
               <div>
                 <h3 className="font-semibold mb-2">Your Credit Improvement Plan</h3>
-                <div className="whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 p-4 rounded">
+                <div className="whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 p-3 md:p-4 rounded text-sm">
                   {userCreditPlan}
                 </div>
               </div>
             ) : (
               <div>
-                <p className="text-sm text-gray-700">
+                <p className="text-xs md:text-sm text-gray-700">
                   Your personalized credit improvement plan will be provided by an admin after reviewing your questionnaire.
                 </p>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 mt-1">
                   Please complete the questionnaire to get started.
                 </p>
               </div>
@@ -304,27 +304,27 @@ const ImprovePage: React.FC = () => {
       {plan && <RepaymentPlan plan={plan} totalMonths={totalMonths} />}
 
       {wizardOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-auto">
-          <div className="w-full h-full bg-white dark:bg-card-dark p-6">
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-auto p-2">
+          <div className="w-full h-full bg-white dark:bg-card-dark p-4 md:p-6">
             <div className="max-w-4xl mx-auto">
               <Card>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold">Credit Improvement Questionnaire</h2>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 md:mb-4">
+                  <h2 className="text-xl md:text-2xl font-bold">Credit Improvement Questionnaire</h2>
                   <div className="flex items-center gap-2">
-                    <div className="text-sm text-gray-500">Step {Math.min(step, 4)} of 4</div>
-                    <Button onClick={closeWizard} variant="secondary">Close</Button>
+                    <div className="text-xs md:text-sm text-gray-500">Step {Math.min(step, 4)} of 4</div>
+                    <Button onClick={closeWizard} variant="secondary" className="px-3 py-1 text-sm">Close</Button>
                   </div>
                 </div>
 
                 {step === 1 && (
                   <>
                     <h3 className="font-semibold mb-2">Income & Monthly Expenses</h3>
-                    <div className="grid md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <Input id="w-income" label="Monthly Income (₦)" type="number" value={wIncome} onChange={e => setWIncome(e.target.value === '' ? '' : Number(e.target.value))} />
                       <Input id="w-expenses" label="Monthly Expenses (₦)" type="number" value={monthlyExpenses} onChange={e => setMonthlyExpenses(e.target.value === '' ? '' : Number(e.target.value))} />
                     </div>
                     <div className="flex justify-end gap-2 mt-4">
-                      <Button onClick={() => setStep(2)}>Next</Button>
+                      <Button onClick={() => setStep(2)} className="px-4 py-2">Next</Button>
                     </div>
                   </>
                 )}
@@ -332,21 +332,21 @@ const ImprovePage: React.FC = () => {
                 {step === 2 && (
                   <>
                     <h3 className="font-semibold mb-2">Debts & Credit Behaviour</h3>
-                    <p className="text-sm text-gray-500 mb-2">List your debts quickly (one per line): <span className="text-xs text-gray-400">Name - ₦Amount - %Interest</span></p>
-                    <textarea value={debtsText} onChange={e => setDebtsText(e.target.value)} className="w-full p-3 border rounded h-40 mb-3 bg-black text-white" />
-                    <div className="grid md:grid-cols-2 gap-3">
+                    <p className="text-xs text-gray-500 mb-2">List your debts quickly (one per line): <span className="text-[10px] text-gray-400">Name - ₦Amount - %Interest</span></p>
+                    <textarea value={debtsText} onChange={e => setDebtsText(e.target.value)} className="w-full p-3 border rounded h-32 mb-3 bg-black text-white text-sm" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-sm mb-1">Have you missed payments before?</label>
                         <div className="flex gap-2">
                           <Button 
                             onClick={() => setWMissedPayments('no')} 
-                            className={`px-4 py-2 rounded ${wMissedPayments === 'no' ? 'bg-green-500 text-white ring-2 ring-green-300' : 'bg-gray-200 text-gray-800'}`}
+                            className={`px-3 py-2 rounded text-sm ${wMissedPayments === 'no' ? 'bg-green-500 text-white ring-2 ring-green-300' : 'bg-gray-200 text-gray-800'}`}
                           >
                             No
                           </Button>
                           <Button 
                             onClick={() => setWMissedPayments('yes')} 
-                            className={`px-4 py-2 rounded ${wMissedPayments === 'yes' ? 'bg-green-500 text-white ring-2 ring-green-300' : 'bg-gray-200 text-gray-800'}`}
+                            className={`px-3 py-2 rounded text-sm ${wMissedPayments === 'yes' ? 'bg-green-500 text-white ring-2 ring-green-300' : 'bg-gray-200 text-gray-800'}`}
                           >
                             Yes
                           </Button>
@@ -357,13 +357,13 @@ const ImprovePage: React.FC = () => {
                         <div className="flex gap-2">
                           <Button 
                             onClick={() => setWHasLoans('yes')} 
-                            className={`px-4 py-2 rounded ${wHasLoans === 'yes' ? 'bg-green-500 text-white ring-2 ring-green-300' : 'bg-gray-200 text-gray-800'}`}
+                            className={`px-3 py-2 rounded text-sm ${wHasLoans === 'yes' ? 'bg-green-500 text-white ring-2 ring-green-300' : 'bg-gray-200 text-gray-800'}`}
                           >
                             Yes
                           </Button>
                           <Button 
                             onClick={() => setWHasLoans('no')} 
-                            className={`px-4 py-2 rounded ${wHasLoans === 'no' ? 'bg-green-500 text-white ring-2 ring-green-300' : 'bg-gray-200 text-gray-800'}`}
+                            className={`px-3 py-2 rounded text-sm ${wHasLoans === 'no' ? 'bg-green-500 text-white ring-2 ring-green-300' : 'bg-gray-200 text-gray-800'}`}
                           >
                             No
                           </Button>
@@ -372,8 +372,8 @@ const ImprovePage: React.FC = () => {
                     </div>
 
                     <div className="flex justify-between gap-2 mt-4">
-                      <Button variant="secondary" onClick={() => setStep(1)}>Back</Button>
-                      <Button onClick={() => setStep(3)}>Next</Button>
+                      <Button variant="secondary" onClick={() => setStep(1)} className="px-3 py-2 text-sm">Back</Button>
+                      <Button onClick={() => setStep(3)} className="px-4 py-2">Next</Button>
                     </div>
                   </>
                 )}
@@ -381,7 +381,7 @@ const ImprovePage: React.FC = () => {
                 {step === 3 && (
                   <>
                     <h3 className="font-semibold mb-2">Habits & Goals</h3>
-                    <div className="grid md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
                         <label htmlFor="w-goal" className="block text-sm font-medium mb-1">
                           What is your current credit score?
@@ -399,10 +399,10 @@ const ImprovePage: React.FC = () => {
                               setWGoal(value);
                             }
                           }}
-                          className="w-full px-3 py-2 border border-primary-green rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          className="w-full px-3 py-2 border border-primary-green rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
                           placeholder="Enter credit score (0-850)"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Enter a credit score between 0-850 (0 if unknown)</p>
+                        <p className="text-[10px] text-gray-500 mt-1">Enter a credit score between 0-850 (0 if unknown)</p>
                       </div>
                       <div>
                         <label htmlFor="w-target-score" className="block text-sm font-medium mb-1">
@@ -421,19 +421,19 @@ const ImprovePage: React.FC = () => {
                               setWTargetScore(value === '' ? '' : Number(value));
                             }
                           }}
-                          className="w-full px-3 py-2 border border-primary-green rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          className="w-full px-3 py-2 border border-primary-green rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
                           placeholder="Enter target score (0-850)"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Enter a target score between 0-850 (0 if unknown)</p>
+                        <p className="text-[10px] text-gray-500 mt-1">Enter a target score between 0-850 (0 if unknown)</p>
                       </div>
-                      <div>
+                      <div className="md:col-span-2">
                         <Input id="w-extra" label="Extra monthly you can pay toward debt (₦)" type="number" value={wExtraMonthly} onChange={e => setWExtraMonthly(e.target.value === '' ? '' : Number(e.target.value))} />
                       </div>
                     </div>
 
                     <div className="flex justify-end gap-2 mt-4">
-                      <Button variant="secondary" onClick={() => setStep(2)}>Back</Button>
-                      <Button onClick={() => setStep(4)}>Next</Button>
+                      <Button variant="secondary" onClick={() => setStep(2)} className="px-3 py-2 text-sm">Back</Button>
+                      <Button onClick={() => setStep(4)} className="px-4 py-2">Next</Button>
                     </div>
                   </>
                 )}
@@ -442,18 +442,23 @@ const ImprovePage: React.FC = () => {
                   <>
                     <h3 className="font-semibold mb-2">Review & Appointment</h3>
 
-                    <p className="text-sm text-gray-500 mb-3">Optional: Select a preferred date for your appointment (admin will see and decide):</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                    <p className="text-xs text-gray-500 mb-3">Optional: Select a preferred date for your appointment (admin will see and decide):</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
                       {sampleSlots.map(s => {
-                        const nice = new Date(s).toLocaleString();
+                        const nice = new Date(s).toLocaleString([], { 
+                          month: 'short', 
+                          day: 'numeric', 
+                          hour: '2-digit', 
+                          minute: '2-digit'
+                        });
                         const active = selectedSlot === s;
                         return (
-                          <div key={s} className={`p-3 border rounded ${active ? 'border-green-500 bg-green-50 ring-2 ring-green-300' : 'border-gray-200'}`}>
+                          <div key={s} className={`p-2 md:p-3 border rounded ${active ? 'border-green-500 bg-green-50 ring-2 ring-green-300' : 'border-gray-200'}`}>
                             <div className="flex items-center justify-between">
-                              <div className={active ? 'text-green-800 font-medium' : 'text-gray-700'}>{nice}</div>
+                              <div className={`text-xs md:text-sm ${active ? 'text-green-800 font-medium' : 'text-gray-700'}`}>{nice}</div>
                               <Button 
                                 onClick={() => setSelectedSlot(s)} 
-                                className={`px-3 py-1 rounded text-sm ${active ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+                                className={`px-2 py-1 md:px-3 md:py-1 rounded text-xs md:text-sm ${active ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-800'}`}
                               >
                                 {active ? 'Selected' : 'Select'}
                               </Button>
@@ -463,9 +468,9 @@ const ImprovePage: React.FC = () => {
                       })}
                     </div>
 
-                    <div className="mt-4">
+                    <div className="mt-3 md:mt-4">
                       <h4 className="font-medium mb-2">Quick review</h4>
-                      <div className="text-sm text-gray-700 mb-2">
+                      <div className="text-xs text-gray-700 space-y-1">
                         <div><strong>Income:</strong> {wIncome || '—'}</div>
                         <div><strong>Expenses:</strong> {monthlyExpenses || '—'}</div>
                         <div><strong>Debts (raw):</strong> {debtsText ? <span className="break-words">{debtsText}</span> : '—'}</div>
@@ -477,8 +482,8 @@ const ImprovePage: React.FC = () => {
                     </div>
 
                     <div className="flex justify-between gap-2 mt-4">
-                      <Button variant="secondary" onClick={() => setStep(3)}>Back</Button>
-                      <Button onClick={submitWizard}>Submit</Button>
+                      <Button variant="secondary" onClick={() => setStep(3)} className="px-3 py-2 text-sm">Back</Button>
+                      <Button onClick={submitWizard} className="px-4 py-2">Submit</Button>
                     </div>
                   </>
                 )}

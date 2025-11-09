@@ -16,8 +16,8 @@ const progressData = [
 
 const Badge: React.FC<{ icon: string; title: string; earned: boolean }> = ({ icon, title, earned }) => (
     <div className={`text-center p-4 rounded-lg ${earned ? 'bg-green-100 dark:bg-green-900' : 'bg-gray-100 dark:bg-gray-700 opacity-50'}`}>
-        <span className="text-4xl">{icon}</span>
-        <p className="font-semibold mt-2">{title}</p>
+        <span className="text-3xl md:text-4xl">{icon}</span>
+        <p className="font-semibold mt-2 text-sm md:text-base">{title}</p>
     </div>
 );
 
@@ -45,56 +45,58 @@ const UserDashboardPage: React.FC = () => {
     }, []);
     
     return (
-        <div className="space-y-8">
-            <h1 className="text-3xl font-bold">Welcome back, {user?.name}!</h1>
+        <div className="space-y-6 md:space-y-8">
+            <h1 className="text-2xl md:text-3xl font-bold">Welcome back, {user?.name}!</h1>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 <Card className="flex flex-col items-center justify-center bg-gradient-to-br from-primary-blue to-blue-400 text-white">
-                    <span className="text-lg font-medium">Current Credit Score</span>
-                    <span className="text-5xl font-bold">
+                    <span className="text-base md:text-lg font-medium">Current Credit Score</span>
+                    <span className="text-3xl md:text-5xl font-bold my-2">
                       {user?.currentCreditScore !== undefined && user?.currentCreditScore !== null 
                         ? user.currentCreditScore 
                         : '—'}
                     </span>
-                    <span className="text-sm opacity-80">Updated today</span>
+                    <span className="text-xs md:text-sm opacity-80">Updated today</span>
                 </Card>
                  <Card className="flex flex-col items-center justify-center bg-gradient-to-br from-primary-green to-green-400 text-white">
-                    <span className="text-lg font-medium">Target Credit Score</span>
-                    <span className="text-5xl font-bold">
+                    <span className="text-base md:text-lg font-medium">Target Credit Score</span>
+                    <span className="text-3xl md:text-5xl font-bold my-2">
                       {user?.targetCreditScore !== undefined && user?.targetCreditScore !== null 
                         ? user.targetCreditScore 
                         : '—'}
                     </span>
-                    <span className="text-sm opacity-80">Goal in 8 months</span>
+                    <span className="text-xs md:text-sm opacity-80">Goal in 8 months</span>
                 </Card>
                  <Card className="flex flex-col items-center justify-center">
-                    <span className="text-lg font-medium">Next Payment Due</span>
-                    <span className="text-3xl font-bold text-red-500">
+                    <span className="text-base md:text-lg font-medium">Next Payment Due</span>
+                    <span className="text-2xl md:text-3xl font-bold text-red-500 my-2">
                       ₦{user?.extraMonthlyPayment !== undefined && user?.extraMonthlyPayment !== null 
                         ? user.extraMonthlyPayment.toLocaleString() 
                         : '0'}
                     </span>
-                    <span className="text-sm">in 5 days</span>
+                    <span className="text-xs md:text-sm">in 5 days</span>
                 </Card>
             </div>
             
             <Card>
-                <h2 className="text-2xl font-bold mb-4">Credit Score Progress</h2>
-                 <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={progressData}>
-                        <XAxis dataKey="name" />
-                        <YAxis domain={[500, 850]} />
-                        <Tooltip contentStyle={{ backgroundColor: '#333', border: 'none', borderRadius: '8px' }}/>
-                        <Legend />
-                        <Bar dataKey="score" fill="#1db954" />
-                    </BarChart>
-                </ResponsiveContainer>
+                <h2 className="text-xl md:text-2xl font-bold mb-4">Credit Score Progress</h2>
+                 <div className="h-64 md:h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={progressData}>
+                            <XAxis dataKey="name" />
+                            <YAxis domain={[500, 850]} />
+                            <Tooltip contentStyle={{ backgroundColor: '#333', border: 'none', borderRadius: '8px' }}/>
+                            <Legend />
+                            <Bar dataKey="score" fill="#1db954" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
             </Card>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <Card>
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-bold">Improvement Tips</h2>
+                        <h2 className="text-xl md:text-2xl font-bold">Improvement Tips</h2>
                         <button 
                             onClick={handleRefreshTips}
                             className="text-sm text-blue-500 hover:text-blue-700"
@@ -118,14 +120,14 @@ const UserDashboardPage: React.FC = () => {
                     ) : (
                         <ul className="space-y-3 list-disc list-inside">
                             {tips.map((tip, index) => (
-                                <li key={tip.id}>{tip.description}</li>
+                                <li key={tip.id} className="text-sm md:text-base">{tip.description}</li>
                             ))}
                         </ul>
                     )}
                 </Card>
                 <Card>
-                    <h2 className="text-2xl font-bold mb-4">Your Badges</h2>
-                    <div className="grid grid-cols-3 gap-4">
+                    <h2 className="text-xl md:text-2xl font-bold mb-4">Your Badges</h2>
+                    <div className="grid grid-cols-3 gap-3 md:gap-4">
                         <Badge icon="🌱" title="Credit Starter" earned={true} />
                         <Badge icon="🔥" title="Debt Crusher" earned={true} />
                         <Badge icon="🏆" title="700 Club" earned={false} />

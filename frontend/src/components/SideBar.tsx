@@ -21,7 +21,7 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="flex flex-col w-64 fixed inset-y-0 bg-card-light dark:bg-card-dark border-r border-gray-200 dark:border-gray-700 p-4">
+    <div className="flex flex-col h-full bg-card-light dark:bg-card-dark border-r border-gray-200 dark:border-gray-700 p-4 w-64">
       <div className="mb-6">
         <NavLink to="/" className="text-2xl font-bold text-primary-green">CreditWise</NavLink>
       </div>
@@ -57,6 +57,6 @@ export const Sidebar: React.FC = () => {
       <div className="pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
         <p className="text-xs text-gray-500 dark:text-gray-400">© CreditWise</p>
       </div>
-    </aside>
+    </div>
   );
 };

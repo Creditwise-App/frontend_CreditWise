@@ -89,10 +89,10 @@ const LearnPage: React.FC = () => {
     }
 
     return (
-        <div className="grid md:grid-cols-3 gap-8">
-            <div className="md:col-span-1">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
+            <div className="lg:col-span-1">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-bold">Lessons</h2>
+                    <h2 className="text-xl md:text-2xl font-bold">Lessons</h2>
                     <button 
                         onClick={handleRefreshLessons}
                         className="text-sm text-blue-500 hover:text-blue-700"
@@ -101,27 +101,27 @@ const LearnPage: React.FC = () => {
                         {loading ? 'Loading...' : 'Refresh'}
                     </button>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                     {lessons.map(lesson => (
                         <div
                             key={lesson.id}
                             onClick={() => handleSelectLesson(lesson)} 
-                            className={`p-4 rounded-lg cursor-pointer transition-all relative ${
+                            className={`p-3 md:p-4 rounded-lg cursor-pointer transition-all relative ${
                                 selectedLesson?.id === lesson.id
                                     ? 'bg-primary-blue text-white shadow-lg'
                                     : 'bg-card-light dark:bg-card-dark hover:bg-gray-100 dark:hover:bg-gray-700'
                             }`}
                         >
-                            <h3 className="font-bold">{lesson.title}</h3>
-                            <div className="flex items-center mt-2 space-x-4">
+                            <h3 className="font-bold text-sm md:text-base">{lesson.title}</h3>
+                            <div className="flex items-center mt-2 space-x-3 md:space-x-4">
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         handleLikeLesson(lesson.id);
                                     }}
-                                    className="flex items-center text-sm"
+                                    className="flex items-center text-xs md:text-sm"
                                 >
-                                    <span className="mr-1 text-lg">
+                                    <span className="mr-1 text-base md:text-lg">
                                         {userFeedback[lesson.id] === 'like' ? '👍' : '👍'}
                                     </span>
                                     <span>{lesson.likes || 0}</span>
@@ -131,9 +131,9 @@ const LearnPage: React.FC = () => {
                                         e.stopPropagation();
                                         handleDislikeLesson(lesson.id);
                                     }}
-                                    className="flex items-center text-sm"
+                                    className="flex items-center text-xs md:text-sm"
                                 >
-                                    <span className="mr-1 text-lg">
+                                    <span className="mr-1 text-base md:text-lg">
                                         {userFeedback[lesson.id] === 'dislike' ? '👎' : '👎'}
                                     </span>
                                     <span>{lesson.dislikes || 0}</span>
@@ -144,42 +144,42 @@ const LearnPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="md:col-span-2">
-                <Card className="min-h-[60vh]">
+            <div className="lg:col-span-2">
+                <Card className="min-h-[50vh] md:min-h-[60vh]">
                     {selectedLesson ? (
                         <div>
-                            <h2 className="text-3xl font-bold mb-4">{selectedLesson.title}</h2>
-                            <p className="text-lg leading-relaxed mb-6">
+                            <h2 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4">{selectedLesson.title}</h2>
+                            <p className="text-base md:text-lg leading-relaxed mb-4 md:mb-6">
                                 {selectedLesson.content}
                             </p>
-                            <div className="flex space-x-4">
+                            <div className="flex space-x-3 md:space-x-4">
                                 <button
                                     onClick={() => handleLikeLesson(selectedLesson.id)}
-                                    className={`flex items-center text-sm px-3 py-1 rounded ${
+                                    className={`flex items-center text-sm px-2 py-1 md:px-3 md:py-1 rounded ${
                                         userFeedback[selectedLesson.id] === 'like' 
                                             ? 'bg-green-100 text-green-800' 
                                             : 'bg-gray-100 text-gray-800'
                                     }`}
                                 >
-                                    <span className="mr-1 text-lg">👍</span>
+                                    <span className="mr-1 text-base md:text-lg">👍</span>
                                     <span>{selectedLesson.likes || 0}</span>
                                 </button>
                                 <button
                                     onClick={() => handleDislikeLesson(selectedLesson.id)}
-                                    className={`flex items-center text-sm px-3 py-1 rounded ${
+                                    className={`flex items-center text-sm px-2 py-1 md:px-3 md:py-1 rounded ${
                                         userFeedback[selectedLesson.id] === 'dislike' 
                                             ? 'bg-red-100 text-red-800' 
                                             : 'bg-gray-100 text-gray-800'
                                     }`}
                                 >
-                                    <span className="mr-1 text-lg">👎</span>
+                                    <span className="mr-1 text-base md:text-lg">👎</span>
                                     <span>{selectedLesson.dislikes || 0}</span>
                                 </button>
                             </div>
                         </div>
                     ) : (
                         <div className="flex items-center justify-center h-full">
-                            <p className="text-xl text-gray-500">Select a lesson to begin.</p>
+                            <p className="text-lg text-gray-500">Select a lesson to begin.</p>
                         </div>
                     )}
                 </Card>

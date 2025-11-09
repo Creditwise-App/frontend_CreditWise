@@ -2,7 +2,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { UserRole } from '../types';
+import { UserRole } from '../../types';
 
 interface ProtectedRouteProps {
   // Fix: Changed JSX.Element to React.ReactElement to resolve namespace error.

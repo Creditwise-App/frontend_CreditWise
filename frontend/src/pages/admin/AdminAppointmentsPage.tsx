@@ -60,11 +60,11 @@ const AdminAppointmentsPage: React.FC = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Appointments</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+        <h1 className="text-xl md:text-2xl font-bold">Appointments</h1>
         <button 
           onClick={fetchAppointments}
-          className="px-4 py-2 bg-primary-blue text-white rounded hover:bg-blue-600"
+          className="px-3 py-2 md:px-4 md:py-2 bg-primary-blue text-white rounded hover:bg-blue-600 text-sm md:text-base"
           disabled={loading}
         >
           {loading ? 'Refreshing...' : 'Refresh'}
@@ -73,22 +73,22 @@ const AdminAppointmentsPage: React.FC = () => {
       
       <div className="space-y-3">
         {appointments.length === 0 ? (
-          <Card>No appointments yet.</Card>
+          <Card className="p-4">No appointments yet.</Card>
         ) : (
           <>
-            <p className="text-gray-600">Showing {appointments.length} appointments</p>
+            <p className="text-gray-600 text-sm">Showing {appointments.length} appointments</p>
             {appointments.map(appt => (
-              <Card key={appt.id}>
-                <div className="flex items-center justify-between">
+              <Card key={appt.id} className="p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <div className="font-semibold">{appt.userName ?? 'Guest'}</div>
-                    <div className="text-sm text-gray-500">{new Date(appt.createdAt).toLocaleString()}</div>
-                    <div className="text-sm mt-1">Preferred: {appt.preferredDate ? new Date(appt.preferredDate).toLocaleString() : 'No preference'}</div>
+                    <div className="font-semibold text-sm md:text-base">{appt.userName ?? 'Guest'}</div>
+                    <div className="text-xs text-gray-500">{new Date(appt.createdAt).toLocaleString()}</div>
+                    <div className="text-xs mt-1">Preferred: {appt.preferredDate ? new Date(appt.preferredDate).toLocaleString() : 'No preference'}</div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 md:gap-3">
                     <div>{statusBadge(appt.status)}</div>
-                    <Link to={`/admin/appointments/${appt.id}`} className="px-3 py-1 bg-primary-blue text-white rounded">
+                    <Link to={`/admin/appointments/${appt.id}`} className="px-2 py-1 md:px-3 md:py-1 bg-primary-blue text-white rounded text-sm">
                       View
                     </Link>
                   </div>

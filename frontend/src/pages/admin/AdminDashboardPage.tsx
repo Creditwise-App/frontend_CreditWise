@@ -90,78 +90,82 @@ const AdminDashboardPage: React.FC = () => {
     ];
 
     return (
-        <div className="space-y-8">
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <div className="space-y-6 md:space-y-8">
+            <h1 className="text-2xl md:text-3xl font-bold">Admin Dashboard</h1>
 
-            <div className="grid md:grid-cols-3 gap-6">
-                <Card className="text-center">
-                    <h3 className="text-lg font-medium">Total Users</h3>
-                    <p className="text-4xl font-bold text-primary-blue">{stats?.totalUsers || 0}</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                <Card className="text-center p-4">
+                    <h3 className="text-base md:text-lg font-medium">Total Users</h3>
+                    <p className="text-3xl md:text-4xl font-bold text-primary-blue">{stats?.totalUsers || 0}</p>
                 </Card>
-                <Card className="text-center">
-                    <h3 className="text-lg font-medium">Lessons Published</h3>
-                    <p className="text-4xl font-bold text-primary-green">{stats?.totalLessons || 0}</p>
+                <Card className="text-center p-4">
+                    <h3 className="text-base md:text-lg font-medium">Lessons Published</h3>
+                    <p className="text-3xl md:text-4xl font-bold text-primary-green">{stats?.totalLessons || 0}</p>
                 </Card>
-                <Card className="text-center">
+                <Card className="text-center p-4">
                     <div className="flex justify-around items-center">
                         <div className="text-center">
-                            <h3 className="text-lg font-medium">Likes</h3>
-                            <p className="text-3xl font-bold text-green-500">{stats?.totalLikes || 0}</p>
+                            <h3 className="text-base md:text-lg font-medium">Likes</h3>
+                            <p className="text-2xl md:text-3xl font-bold text-green-500">{stats?.totalLikes || 0}</p>
                         </div>
                         <div className="text-center">
-                            <h3 className="text-lg font-medium">Dislikes</h3>
-                            <p className="text-3xl font-bold text-red-500">{stats?.totalDislikes || 0}</p>
+                            <h3 className="text-base md:text-lg font-medium">Dislikes</h3>
+                            <p className="text-2xl md:text-3xl font-bold text-red-500">{stats?.totalDislikes || 0}</p>
                         </div>
                     </div>
                 </Card>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <Card>
-                    <h2 className="text-2xl font-bold mb-4">Active Users</h2>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={userActivityData}>
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="active" fill="#007bff" />
-                        </BarChart>
-                    </ResponsiveContainer>
+                    <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Active Users</h2>
+                    <div className="h-64 md:h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={userActivityData}>
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="active" fill="#007bff" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </Card>
                 <Card>
-                    <h2 className="text-2xl font-bold mb-4">Lesson Feedback Distribution</h2>
-                     <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                            <Pie
-                                data={feedbackData}
-                                cx="50%"
-                                cy="50%"
-                                labelLine={false}
-                                outerRadius={80}
-                                fill="#8884d8"
-                                dataKey="value"
-                                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                            >
-                                {feedbackData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                        </PieChart>
-                    </ResponsiveContainer>
+                    <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Lesson Feedback Distribution</h2>
+                     <div className="h-64 md:h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={feedbackData}
+                                    cx="50%"
+                                    cy="50%"
+                                    labelLine={false}
+                                    outerRadius={80}
+                                    fill="#8884d8"
+                                    dataKey="value"
+                                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                >
+                                    {feedbackData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
                 </Card>
             </div>
 
             {/* New section for detailed lesson feedback */}
             {lessonFeedback.length > 0 && (
-                <div className="grid gap-6">
+                <div className="grid gap-4 md:gap-6">
                     <Card>
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-                            <h2 className="text-2xl font-bold text-primary-green">Lesson Feedback Details</h2>
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 md:mb-4 gap-3 md:gap-4">
+                            <h2 className="text-xl md:text-2xl font-bold text-primary-green">Lesson Feedback Details</h2>
                             <div className="relative w-full sm:w-64">
                                 <input
                                     type="text"
                                     placeholder="Search lessons..."
-                                    className="w-full px-4 py-2 border border-primary-green rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    className="w-full px-3 py-2 text-sm md:px-4 md:py-2 md:text-base border border-primary-green rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -179,23 +183,23 @@ const AdminDashboardPage: React.FC = () => {
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Lesson Title</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Likes</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dislikes</th>
+                                        <th className="px-3 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Lesson Title</th>
+                                        <th className="px-3 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Likes</th>
+                                        <th className="px-3 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Dislikes</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                                     {filteredLessonFeedback.length > 0 ? (
                                         filteredLessonFeedback.map((lesson) => (
                                             <tr key={lesson._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{lesson.title}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-primary-green">{lesson.likes || 0}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-500">{lesson.dislikes || 0}</td>
+                                                <td className="px-3 py-2 md:px-6 md:py-4 text-xs md:text-sm font-medium text-gray-900 dark:text-white">{lesson.title}</td>
+                                                <td className="px-3 py-2 md:px-6 md:py-4 text-xs md:text-sm font-bold text-primary-green">{lesson.likes || 0}</td>
+                                                <td className="px-3 py-2 md:px-6 md:py-4 text-xs md:text-sm font-bold text-red-500">{lesson.dislikes || 0}</td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                            <td colSpan={3} className="px-3 py-2 md:px-6 md:py-4 text-center text-xs md:text-sm text-gray-500 dark:text-gray-400">
                                                 No lessons found matching "{searchTerm}"
                                             </td>
                                         </tr>
